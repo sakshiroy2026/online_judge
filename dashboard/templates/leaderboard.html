@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* A custom font can elevate the theme. 'Orbitron' is a great futuristic choice. */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    body {
+      font-family: 'Orbitron', sans-serif;
+      /* The epic arena background */
+      background-image: url("{% static 'images/leaderboardBG.png' %}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+  <!-- Main Container with Glassmorphism Effect -->
+  <div class="min-h-screen bg-black/70 backdrop-blur-sm flex flex-col items-center p-4 sm:p-8">
+    
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-5xl sm:text-7xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-red-700 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+        Code Gladiators Arena
+      </h1>
+      <p class="text-cyan-400 text-lg sm:text-xl font-semibold tracking-wider drop-shadow-lg">Hall of Champions</p>
+    </header>
+
+    <!-- Leaderboard List -->
+    <div class="w-full max-w-4xl bg-gray-900/80 border-2 border-cyan-400/50 rounded-2xl shadow-2xl shadow-cyan-500/20">
+      <div class="p-4 sm:p-6">
+        <ol class="space-y-4">
+
+          {% for user_profile in ranked_users %}
+            <!-- Player Row -->
+            <li class="flex items-center gap-4 p-4 rounded-lg border border-gray-700 hover:bg-cyan-400/10 hover:border-cyan-300 transition-all duration-300">
+              
+              <!-- Rank Number and Icon -->
+              <div class="flex items-center gap-3 w-24">
+                  <span class="text-3xl font-bold italic
+                    {% if forloop.counter == 1 %} text-yellow-400
+                    {% elif forloop.counter == 2 %} text-gray-300
+                    {% elif forloop.counter == 3 %} text-amber-600
+                    {% else %} text-gray-500 {% endif %}">
+                    #{{ forloop.counter }}
+                  </span>
+                  
+                  <!-- Dynamic Rank Icons -->
+                  {% if forloop.counter == 1 %}
+                    <!-- <img src="" alt="Gold Rank" class="w-10 h-10 drop-shadow-[0_0_8px_rgba(250,204,21,0.7)]"> -->
+                  {% elif forloop.counter == 2 %}
+                    <!-- <img src="" alt="Silver Rank" class="w-10 h-10 drop-shadow-[0_0_8px_rgba(209,213,219,0.7)]"> -->
+                  {% elif forloop.counter == 3 %}
+                    <!-- <img src="" alt="Bronze Rank" class="w-10 h-10 drop-shadow-[0_0_8px_rgba(202,138,4,0.7)]"> -->
+                  {% else %}
+                    <!-- <img src="" alt="Rank" class="w-8 h-8 opacity-60"> -->
+                  {% endif %}
+              </div>
+
+              <!-- Player Info -->
+              <div class="flex items-center gap-4 flex-grow">
+                <img src="https://api.dicebear.com/8.x/bottts/svg?seed={{user_profile.username}}" alt="avatar" class="w-12 h-12 rounded-full border-2 border-gray-600">
+                <span class="text-lg font-bold text-gray-200">{{ user_profile.username }}</span>
+              </div>
+
+              <!-- Score -->
+              <div class="flex items-center gap-2">
+                 <!-- Flame SVG Icon -->
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]" viewBox="0 0 20 20" fill="currentColor">
+                   <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 01-1.898-.632l4-12a1 1 0 011.265-.633zM10 18a1 1 0 01.707.293l2 2a1 1 0 11-1.414 1.414l-2-2A1 1 0 0110 18zm-6.707-6.707a1 1 0 010-1.414l2-2a1 1 0 011.414 1.414l-2 2a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                   <path d="M10.293 3.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L5.707 8.707a1 1 0 01-1.414-1.414l4-4z" />
+                 </svg>
+                <span class="text-2xl font-black text-cyan-400">{{ user_profile.solved_count }}</span>
+              </div>
+            </li>
+          {% empty %}
+            <div class="text-center p-12 text-gray-400">
+              <p class="text-2xl font-bold">The Arena is Silent...</p>
+              <p>Be the first gladiator to conquer a challenge and claim your rank!</p>
+            </div>
+          {% endfor %}
+
+        </ol>
+      </div>
+    </div>
+    
+    <footer class="mt-8 text-center text-gray-500">
+      <p>Roy'sCode &copy; 2025. Forge your legacy.</p>
+    </footer>
+
+  </div>
+</body>
+</html>

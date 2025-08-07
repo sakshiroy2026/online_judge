@@ -1,0 +1,132 @@
+
+
+<!DOCTYPE html>
+<html lang="en" class="transition duration-300">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Roy'sCode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+    <style>
+        /* Re-using the retro grid background for theme consistency */
+        body {
+            background-color: #0d0d1a;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: pan-background 30s linear infinite;
+        }
+
+        .dark body {
+            background-color: #050508;
+            background-image: 
+                linear-gradient(rgba(34, 211, 238, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, 0.3) 1px, transparent 1px);
+        }
+        
+        @keyframes pan-background {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center font-mono text-gray-300 transition duration-300 py-12">
+
+    <!-- Dark Mode Toggle Button -->
+    <button onclick="toggleDarkMode()" class="absolute top-5 right-5 z-10 p-2 border-2 border-purple-500/50 dark:border-cyan-400/50 rounded-full text-purple-400 dark:text-cyan-400 hover:bg-purple-500/20 dark:hover:bg-cyan-400/20 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+    </button>
+
+    <!-- Registration Form Container -->
+    <div class="w-full max-w-md bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 dark:border-cyan-500/30 rounded-2xl shadow-2xl shadow-purple-600/40 dark:shadow-cyan-500/40 p-8 space-y-6">
+        
+        <!-- Header -->
+        <h2 class="text-3xl font-black text-center uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 dark:from-cyan-400 dark:to-blue-500" style="text-shadow: 0 0 10px rgba(192, 132, 252, 0.3);">
+            Create Your Profile
+        </h2>
+
+        <!-- ✅ Django Messages -->
+        {% if messages %}
+            <ul class="space-y-2">
+                {% for message in messages %}
+                    <li class="bg-red-900/50 border border-red-500 text-red-300 px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        <span>{{ message }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- 🚀 Registration Form -->
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div>
+                <label for="username" class="block text-sm font-bold uppercase tracking-wider text-purple-400 dark:text-cyan-400 mb-2">Player Handle</label>
+                <input type="text" name="username" required
+                    class="mt-1 block w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-600 dark:border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-cyan-500 focus:ring-2 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50 transition duration-300">
+            </div>
+            
+            <!-- First and Last Name -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="first_name" class="block text-sm font-bold uppercase tracking-wider text-purple-400 dark:text-cyan-400 mb-2">First Name</label>
+                    <input type="text" name="first_name" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-600 dark:border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-cyan-500 focus:ring-2 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50 transition duration-300">
+                </div>
+                <div>
+                    <label for="last_name" class="block text-sm font-bold uppercase tracking-wider text-purple-400 dark:text-cyan-400 mb-2">Last Name</label>
+                    <input type="text" name="last_name" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-600 dark:border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-cyan-500 focus:ring-2 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50 transition duration-300">
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-bold uppercase tracking-wider text-purple-400 dark:text-cyan-400 mb-2">Email Address</label>
+                <input type="email" name="email" required
+                    class="mt-1 block w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-600 dark:border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-cyan-500 focus:ring-2 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50 transition duration-300">
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="password" class="block text-sm font-bold uppercase tracking-wider text-purple-400 dark:text-cyan-400 mb-2">Secure Password</label>
+                <input type="password" name="password" required
+                    class="mt-1 block w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-600 dark:border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-cyan-500 focus:ring-2 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50 transition duration-300">
+            </div>
+            
+            <!-- Confirm Password -->
+            <div>
+                <label for="confirm_password" class="block text-sm font-bold uppercase tracking-wider text-purple-400 dark:text-cyan-400 mb-2">Verify Password</label>
+                <input type="password" name="confirm_password" required
+                    class="mt-1 block w-full px-4 py-3 bg-gray-800/50 border-2 border-gray-600 dark:border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-cyan-500 focus:ring-2 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50 transition duration-300">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full py-3 mt-4 px-4 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-cyan-500 dark:to-blue-600 hover:from-purple-700 hover:to-pink-700 dark:hover:from-cyan-600 dark:hover:to-blue-700 text-white font-black uppercase tracking-widest rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/40 hover:shadow-xl hover:shadow-pink-500/50 dark:shadow-cyan-500/40 dark:hover:shadow-blue-500/50 focus:outline-none focus:ring-4 focus:ring-purple-500/50 dark:focus:ring-cyan-500/50">
+                Register
+            </button>
+        </form>
+
+        <!-- Login Link -->
+        <p class="text-sm text-center text-gray-400 pt-4">
+            Already have a profile?
+            <a href="/auth/login/" class="font-bold text-purple-400 dark:text-cyan-400 hover:underline hover:text-pink-400 dark:hover:text-blue-400">
+                Access the Terminal.
+            </a>
+        </p>
+    </div>
+
+</body>
+</html>
+
+

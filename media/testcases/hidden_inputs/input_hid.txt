@@ -1,0 +1,13 @@
+s = ""
+---
+s = ".,;!@#$ "
+---
+s = "No'x' in 'Nixon'"
+---
+s = "123a321"
+---
+s = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+---
+s = "a"
+---
+s = "0P"

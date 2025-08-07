@@ -1,0 +1,8 @@
+Django==5.2.4
+protobuf
+python-dotenv==1.1.1
+google-generativeai
+gunicorn
+whitenoise
+psycopg2-binary
+dj-database-url

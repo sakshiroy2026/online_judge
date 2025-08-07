@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Favorite Problems | Roy'sCode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background-image: url("{% static 'images/favoriteBG.jpeg' %}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="text-white">
+
+  <!-- Main Container with Glassmorphism Effect -->
+  <div class="min-h-screen bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+
+    <!-- Favorites Card -->
+    <div class="w-full max-w-4xl bg-gray-900/80 border-2 border-yellow-400/30 rounded-2xl shadow-2xl shadow-yellow-500/20 p-8">
+      
+      <header class="text-center mb-8">
+        <h1 class="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+          Personal Armory
+        </h1>
+        <p class="text-gray-400">Your Hand-Picked Challenges</p>
+      </header>
+
+      <!-- Favorites List -->
+      <div class="space-y-3">
+        {% for entry in favorite_entries %}
+          <div class="flex items-center justify-between p-4 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-yellow-500 rounded-lg transition-all">
+            <div class="flex items-center space-x-4">
+              <!-- Static Star Icon -->
+              <span class="text-2xl text-yellow-400">★</span>
+              
+              <!-- Link to the problem -->
+              <a href="{% url 'problem_detail' entry.question.id %}" class="text-lg font-bold text-gray-200 hover:text-yellow-400 transition-colors">
+                {{ entry.question.title }}
+              </a>
+            </div>
+            
+            <!-- Difficulty Tag -->
+            <span class="px-3 py-1 text-xs font-bold rounded-full
+              {% if entry.question.difficulty == 'Easy' %} bg-green-500/20 text-green-300
+              {% elif entry.question.difficulty == 'Medium' %} bg-yellow-500/20 text-yellow-300
+              {% else %} bg-red-500/20 text-red-300 {% endif %}">
+              {{ entry.question.difficulty }}
+            </span>
+          </div>
+        {% empty %}
+          <div class="text-center p-12 text-gray-400">
+            <p class="text-2xl font-bold">Your Armory is Empty.</p>
+            <p>Return to the dashboard and click the star icon next to a problem to add it to your collection!</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="{% url 'dashboard' %}" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold transition-all">
+          ← Back to Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

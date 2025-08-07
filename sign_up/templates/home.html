@@ -1,0 +1,125 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roy'sCode | Enter the Arena</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a1a; /* Deep space blue */
+            background-image: url('https://www.transparenttextures.com/patterns/hexellence.png'); /* Subtle hex grid */
+            color: #e0e0e0;
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 15px #a855f7, 0 0 20px #a855f7;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #a855f7, #6366f1);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
+        }
+
+        .glass-effect {
+            background: rgba(17, 24, 39, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .hero-image {
+            filter: drop-shadow(0 0 2rem #6366f1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Navbar -->
+    <header class="flex justify-between items-center px-8 py-4 glass-effect sticky top-0 z-50">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+            <img src="{% static 'images/RC.png' %}" alt="Roy'sCode Logo" class="h-10 w-10 animate-pulse">
+            <h1 class="text-2xl font-bold tracking-widest text-white">Roy'sCode</h1>
+        </div>
+
+        
+        <!-- Right Buttons: This section is now conditional -->
+        <div class="space-x-6 flex items-center">
+            {% if user.is_authenticated %}
+                <!-- Show these buttons if the user IS logged in -->
+                <a href="{% url 'profile' user.username %}" class="font-medium text-purple-300 hover:text-white transition-colors">
+                    View Profile
+                </a>
+                <!-- Logout button must be a form for security -->
+                <form method="post" action="{% url 'logout-user' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="text-sm font-bold border-2 border-red-400 text-red-300 px-5 py-2 rounded-md hover:bg-red-400 hover:text-black transition-all">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <!-- Show these buttons if the user IS NOT logged in -->
+                <a href="{% url 'login-user' %}" class="font-medium text-purple-300 hover:text-white transition-colors">
+                    Login Protocol
+                </a>
+                <a href="{% url 'register-user' %}" class="text-sm font-bold border-2 border-purple-400 text-purple-300 px-5 py-2 rounded-md hover:bg-purple-400 hover:text-black transition-all">
+                    Create Account
+                </a>
+            {% endif %}
+        </div>
+
+    </header>
+
+    <!-- Hero Section -->
+    <section class="flex flex-col items-center justify-center text-center py-24 px-4 min-h-screen relative">
+        <!-- Background Gradient Ellipse -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-purple-900/30 rounded-full blur-3xl -z-10"></div>
+        
+        <h2 class="text-6xl md:text-8xl font-black uppercase tracking-wider text-white neon-glow">
+            Prove Your Logic
+        </h2>
+        <p class="mt-8 max-w-3xl text-xl text-gray-400 leading-relaxed">
+            This isn't just a platform. It's a digital arena. Forge your skills in the crucible of code, conquer complex algorithms, and ascend the global leaderboards. Prepare for digital combat.
+        </p>
+        
+        <div class="flex items-center gap-6 mt-12">
+            <!-- This is the new "Get Started" button -->
+            <a href="{% url 'dashboard' %}" class="btn-primary text-white px-8 py-4 rounded-lg text-xl font-bold uppercase tracking-wider">
+                Get Started
+            </a>
+        </div>
+        
+        <!-- Animated image placeholder -->
+        <div class="mt-20 mx-auto" style="max-width: 300px;">
+            <!-- <img src="https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c98bd7bb-f113-4dde-876c-36ce3273646d.png"  -->
+            <img src="{% static 'images/RC.png' %}" 
+                 alt="Cybernetic Developer" 
+                 class="w-full max-w-xl hero-image" />
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-sm text-gray-600 border-t border-gray-800">
+        &copy; 2025 Roy'sCode // Systems Online // All Rights Reserved.
+    </footer>
+
+</body>
+</html>

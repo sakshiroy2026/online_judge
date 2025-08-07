@@ -1,0 +1,143 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Roy'sCode Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Import the futuristic Orbitron font */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    body {
+      font-family: 'Orbitron', sans-serif;
+
+      background-image: url("{% static 'images/dashboardBG.jpeg' %}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="text-white">
+
+  <!-- Main Container with Glassmorphism Effect -->
+  <div class="min-h-screen bg-black/70 backdrop-blur-sm">
+
+    <!-- Navigation Bar -->
+    <nav class="flex justify-between items-center p-4 bg-gray-900/80 border-b border-purple-500/30 shadow-lg">
+      
+      <div class="flex items-center space-x-6">
+        
+        <!-- Logo Image -->
+        <img src="{% static 'images/RC.png' %}" alt="Roy'sCode Logo" class="h-10 w-10 animate-pulse">
+            
+        <!-- Text -->
+        <div class="text-2xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Roy'sCode</div>
+      </div>
+      <div class="flex items-center space-x-6">
+        <a href="/auth/register" class="font-semibold hover:text-cyan-400 transition-colors">Sign Up</a>
+        <a href="/auth/login" class="font-semibold hover:text-cyan-400 transition-colors">Login</a>
+        <a href="/auth/logout" class="font-semibold hover:text-cyan-400 transition-colors">Logout</a>
+        
+        <!-- This ensures the link only appears and works if a user is logged in -->
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' user.username %}" title="View My Profile">
+              <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-lg hover:ring-2 hover:ring-purple-500 transition-all shadow-md">👤</div>
+          </a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="w-1/5 bg-gray-900/60 h-[calc(100vh-68px)] p-6 border-r border-purple-500/20">
+        <h2 class="font-bold text-sm uppercase text-gray-400 mb-4 tracking-wider">Quick Access</h2>
+        <ul class="space-y-2">
+          <li><a href="{% url 'leaderboard' %}" class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-300 border-l-4 border-transparent hover:border-cyan-400 hover:bg-gray-700/50 transition-all">Leaderboard</a></li>
+          <!-- <li><a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-300 border-l-4 border-transparent hover:border-cyan-400 hover:bg-gray-700/50 transition-all">Contest</a></li> -->
+          <li><a href="/compile" class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-300 border-l-4 border-transparent hover:border-cyan-400 hover:bg-gray-700/50 transition-all">Compiler</a></li>
+        </ul>
+        <h2 class="font-bold text-sm uppercase text-gray-400 mt-8 mb-4 tracking-wider">My Lists</h2>
+        <ul>
+          <li class="mb-2"><a href="{% url 'favorite_list' %}" class="flex items-center gap-3 px-4 py-2 rounded-lg font-bold text-yellow-400 border-l-4 border-transparent hover:border-yellow-400 hover:bg-gray-700/50 transition-all">★ Favorite</a></li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="w-4/5 p-8 overflow-y-auto h-[calc(100vh-68px)]">
+        
+        <!-- DSA Topics -->
+        <div class="flex flex-wrap gap-3 mb-8">
+            {% for topic in topics %}
+                <a href="?topic={{ topic.id }}" class="px-4 py-2 text-sm font-semibold bg-gray-800 border border-purple-500/50 rounded-full hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-400 transition-all">
+                    {{ topic.name }}
+                </a>
+            {% endfor %}
+        </div>
+        
+
+        <!-- Search Bar Form -->
+        <form method="GET" action="{% url 'dashboard' %}" class="mb-8 relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input 
+                type="text" 
+                name="search" 
+                value="{{ search_query|default:'' }}"
+                placeholder="Search questions by name or keyword..." 
+                class="w-full p-4 pl-12 bg-gray-800/80 border-2 border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all" 
+            />
+            <!-- You can optionally add a submit button, but pressing Enter will also work -->
+        </form>
+
+
+        <!-- Problem List -->
+        <div class="space-y-3">
+          {% for question in questions %}
+            <div class="flex items-center justify-between p-4 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-purple-500 rounded-lg transition-all transform hover:scale-[1.02]">
+              <div class="flex items-center space-x-4">
+                <input 
+                  type="checkbox" 
+                  class="h-5 w-5 bg-gray-900 border-gray-600 rounded text-purple-500 focus:ring-purple-600"
+                  {% if question.id in solved_question_ids %}
+                      checked
+                  {% endif %}
+                  disabled 
+>
+
+                <!-- <a href="{% url 'problem_detail' question.id %}" class="text-lg font-bold text-gray-200 hover:text-purple-400 transition-colors">{{ forloop.counter }}. {{ question.title }}</a> -->
+                <!-- Flex container for star and title -->
+                <div class="flex items-center space-x-3">
+                    <!-- The Interactive Star Icon -->
+                    <a href="{% url 'toggle_favorite' question.id %}" title="Toggle Favorite">
+                        <span class="text-2xl transition-transform transform hover:scale-125
+                            {% if question.id in favorited_question_ids %}
+                                text-yellow-400
+                            {% else %}
+                                text-gray-600 hover:text-yellow-300
+                            {% endif %}
+                        ">★</span>
+                    </a>
+                  
+                    <!-- The Question Title Link (Unchanged) -->
+                    <a href="{% url 'problem_detail' question.id %}" class="text-lg font-bold text-gray-200 hover:text-purple-400 transition-colors">{{ forloop.counter }}. {{ question.title }}</a>
+                </div>
+
+              </div>
+              <span class="px-3 py-1 text-xs font-bold rounded-full
+                {% if question.difficulty == 'Easy' %} bg-green-500/20 text-green-300
+                {% elif question.difficulty == 'Medium' %} bg-yellow-500/20 text-yellow-300
+                {% else %} bg-red-500/20 text-red-300 {% endif %}">
+                {{ question.difficulty }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

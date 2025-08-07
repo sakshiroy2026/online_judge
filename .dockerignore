@@ -1,0 +1,26 @@
+# In .dockerignore
+
+# Git files
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Python cache and virtual environment
+__pycache__/
+*.pyc
+venv/
+env/
+.env
+# Local database and media files
+db.sqlite3
+/media/
+
+# IDE and OS-specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+keys

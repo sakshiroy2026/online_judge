@@ -1,0 +1,19 @@
+# In docker-compose.yml
+
+
+services:
+  app:
+    build: .
+    image: royscode-victoryh
+    container_name: royscode-live
+    ports:
+      - "8000:8000"
+    volumes:
+      - media_volume:/app/media
+
+    # This tells docker-compose to read variables from the .env file
+    env_file:
+      - .env
+
+volumes:
+  media_volume:

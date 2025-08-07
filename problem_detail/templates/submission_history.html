@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Submission History | {{ question.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-image: url("{% static 'images/homeimg.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <div class="min-h-screen bg-black/80 backdrop-blur-sm p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+                Submission Log
+            </h1>
+            <p class="text-gray-400 text-lg">{{ question.title }}</p>
+        </header>
+
+        <div class="w-full max-w-5xl mx-auto bg-gray-900/80 border-2 border-purple-500/30 rounded-2xl shadow-2xl shadow-purple-500/20">
+            <!-- Table Header -->
+            <div class="grid grid-cols-5 gap-4 p-4 font-bold text-sm uppercase text-gray-400 border-b border-gray-700">
+                <div class="col-span-1">Verdict</div>
+                <div class="col-span-1">Score</div>
+                <div class="col-span-1">Language</div>
+                <div class="col-span-2">Timestamp</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="max-h-[60vh] overflow-y-auto">
+                {% for sub in submissions %}
+                    <div class="grid grid-cols-5 gap-4 p-4 items-center border-b border-gray-800 hover:bg-purple-500/10 transition-colors">
+                        <!-- Verdict -->
+                        <div class="col-span-1 font-bold
+                            {% if sub.verdict == 'Accepted' %} text-green-400 {% else %} text-red-500 {% endif %}">
+                            {{ sub.verdict }}
+                        </div>
+                        <!-- Score -->
+                        <div class="col-span-1 text-lg font-semibold">{{ sub.score|floatformat:2 }}%</div>
+                        <!-- Language -->
+                        <div class="col-span-1 text-gray-300">{{ sub.language }}</div>
+                        <!-- Timestamp -->
+                        <div class="col-span-2 text-sm text-gray-500">{{ sub.submitted_at|date:"d M Y, H:i" }}</div>
+                    </div>
+                {% empty %}
+                    <div class="p-8 text-center text-gray-500">
+                        <p>No submissions found for this problem yet.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{% url 'problem_detail' question.id %}" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold transition-all">
+                ← Back to Problem
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

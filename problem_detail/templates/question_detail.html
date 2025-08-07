@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ test_case.question.title }} | Roy'sCode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A more subtle scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #718096; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300 font-sans">
+    <header class="flex items-center justify-between p-3 bg-gray-800 border-b border-gray-700 shadow-lg">
+        <!-- Left Side: Project Logo/Name linked to Dashboard -->
+        <div class="text-xl font-bold text-white">
+            <a href="{% url 'dashboard' %}">Roys'sCode</a>
+        </div>
+        
+        <!-- Right Side: Navigation Buttons -->
+        <div class="flex items-center gap-4">
+            <a href="{% url 'dashboard' %}" class="px-4 py-2 text-sm font-bold bg-gray-700 hover:bg-gray-600 rounded-md transition-colors">
+                Dashboard
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.username %}" title="View My Profile" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-lg hover:ring-2 hover:ring-purple-500 transition-all">
+                👤
+            </a>
+            {% endif %}
+        </div>
+    </header>
+    <!-- Main Flex Container -->
+    <div class="flex h-screen gap-4 p-4">
+
+        <!-- Left Panel: Problem Description -->
+        <div class="w-2/5 flex flex-col bg-gray-800 rounded-lg shadow-lg">
+            <!-- Tab Navigation -->
+            <div class="flex shrink-0 border-b border-gray-700 px-4">
+                <button class="px-4 py-3 text-sm font-semibold border-b-2 border-blue-500 text-white">Description</button>
+                <a href="{% url 'submission_history' test_case.id test_case.question.id %}" class="px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white hover:border-blue-400 transition-colors">Submissions</a>
+            </div>
+
+            <!-- Scrollable Content Area for Description -->
+            <div class="p-6 overflow-y-auto">
+                <!-- Question Title -->
+                <h1 class="text-2xl font-bold text-white mb-3">{{ test_case.question.title }}</h1>
+                <!-- Tags -->
+                <div class="flex gap-2 mb-6">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-700 text-gray-300">{{ test_case.topic.name }}</span>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full
+                        {% if test_case.difficulty == 'Easy' %} bg-green-900 text-green-300
+                        {% elif test_case.difficulty == 'Medium' %} bg-yellow-900 text-yellow-300
+                        {% else %} bg-red-900 text-red-300 {% endif %}">
+                        {{ test_case.difficulty }}
+                    </span>
+                </div>
+                
+                <!-- Description Section -->
+                <div class="space-y-4 text-sm leading-relaxed">
+                    <p>{{ test_case.description|linebreaksbr }}</p>
+
+                    {% if input_content %}
+                    <div>
+                        <h3 class="font-semibold text-white mb-1">Sample Input</h3>
+                        <pre class="bg-gray-900 p-3 rounded-md font-mono text-xs">{{ input_content }}</pre>
+                    </div>
+                    {% endif %}
+
+                    {% if output_content %}
+                    <div>
+                        <h3 class="font-semibold text-white mb-1">Sample Output</h3>
+                        <pre class="bg-gray-900 p-3 rounded-md font-mono text-xs">{{ output_content }}</pre>
+                    </div>
+                    {% endif %}
+
+                    {% if test_case.explanations %}
+                    <div>
+                        <h3 class="font-semibold text-white mb-1">Explanation</h3>
+                        <p class="text-gray-400">{{ test_case.explanations|linebreaksbr }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if test_case.constraints %}
+                    <div>
+                        <h3 class="font-semibold text-white mb-1">Constraints</h3>
+                        <pre class="bg-gray-900 p-3 rounded-md font-mono text-xs">{{ test_case.constraints }}</pre>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Online Judge -->
+        <div class="w-3/5 flex flex-col bg-gray-800 rounded-lg shadow-lg">
+            <form method="POST" action="{% url 'submit_question' test_case.id %}" class="flex flex-col h-full">
+                {% csrf_token %}
+
+                <!-- Top Bar: Language Selector -->
+                <div class="shrink-0 p-3 border-b border-gray-700">
+                    <label for="language" class="text-xs font-semibold mr-2">Language:</label>
+                    <select name="language" id="language" class="bg-gray-900 text-white p-2 text-sm rounded-md border border-gray-600 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="cpp" {% if submission.language == 'cpp' %}selected{% endif %}>C++</option>
+                        <option value="py" {% if submission.language == 'py' %}selected{% endif %}>Python</option>
+                    </select>
+                </div>
+                
+                <!-- Code Editor Area -->
+                <div class="flex-grow flex flex-col p-4">
+                    <textarea name="code" class="w-full h-full p-4 bg-gray-900 rounded-md border border-gray-700 font-mono text-sm focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="Write your code here...">{% if submission %}{{ submission.code }}{% endif %}</textarea>
+                </div>
+
+                <!-- Bottom Panel: Input, Buttons, and Results -->
+                <div class="shrink-0 p-4 border-t border-gray-700">
+                    <!-- Custom Input and Buttons -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex-grow">
+                            <label for="input_data" class="text-xs font-semibold mb-1 block">Custom Input</label>
+                            <textarea name="input_data" rows="3" class="w-full p-2 bg-gray-900 rounded-md border border-gray-700 font-mono text-xs resize-none" placeholder="Enter custom input...">{% if submission %}{{ submission.input_data|default_if_none:'' }}{% endif %}</textarea>
+                        </div>
+                        <div class="flex items-end gap-2 ml-4">
+                            <button class="px-4 py-2 text-sm font-bold bg-gray-600 hover:bg-gray-500 rounded-md transition-colors" name="action" value="run">Run</button>
+                            <button class="px-4 py-2 text-sm font-bold bg-green-600 hover:bg-green-500 text-white rounded-md transition-colors" name="action" value="submit">Submit</button>
+                            <button class="px-4 py-2 text-sm font-bold bg-purple-600 hover:bg-purple-500 text-white rounded-md transition-colors" name="action" value="ai_help">AI Help</button>
+                        </div>
+                    </div>
+
+                    <!-- Results Display Area -->
+                    <div class="bg-gray-900 rounded-lg p-4 max-h-64 overflow-y-auto">
+                        {% if messages %}{% for message in messages %}<div class="text-red-400 mb-2">{{ message }}</div>{% endfor %}{% endif %}
+
+                        <!-- Custom Run Result -->
+                        {% if custom_run_result %}
+                        <div>
+                            <h4 class="font-bold text-white mb-2">Custom Run Result</h4>
+                            <div class="space-y-2">
+                                <div><strong class="text-gray-400">Input:</strong><pre class="text-xs p-2 bg-gray-800 rounded mt-1">{{ custom_run_result.input }}</pre></div>
+                                <div><strong class="text-gray-400">Your Output:</strong><pre class="text-xs p-2 bg-gray-800 rounded mt-1">{{ custom_run_result.output }}</pre></div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Test Case Results -->
+                        {% if test_results %}
+                        <div>
+                            <div class="mb-3 p-2 rounded-md {% if test_results.score == 100 %}bg-green-900 text-green-300{% else %}bg-red-900 text-red-300{% endif %}">
+                                <strong>Verdict:</strong> {{ test_results.passed_testcases }}/{{ test_results.total_testcases }} Cases Passed (Score: {{ test_results.score|floatformat:2 }}%)
+                            </div>
+                            
+                            {% if ai_response %}<div class="p-3 border border-purple-500/50 bg-purple-900/30 rounded-md mb-3"><h3 class="font-bold text-purple-300 mb-2">AI Assistance</h3><div class="text-sm">{{ ai_response|linebreaksbr }}</div></div>{% endif %}
+                            {% if error %}<div class="p-3 border border-red-500/50 bg-red-900/30 rounded-md mb-3"><h3 class="font-bold text-red-300 mb-2">Error</h3><pre class="text-sm">{{ error }}</pre></div>{% endif %}
+
+                            <div class="space-y-3">
+                            {% for result in test_results.results %}
+                                <details class="bg-gray-800 p-2 rounded-md">
+                                    <summary class="cursor-pointer font-semibold flex items-center justify-between">
+                                        <span>Test Case {{ forloop.counter }}{% if not result.visible %} (Hidden){% endif %}</span>
+                                        <span class="px-2 py-0.5 text-xs rounded-full {% if result.passed %}bg-green-500/20 text-green-300{% else %}bg-red-500/20 text-red-300{% endif %}">
+                                            {% if result.passed %}Passed{% else %}Failed{% endif %}
+                                        </span>
+                                    </summary>
+                                    <div class="mt-3 pt-3 border-t border-gray-700 text-xs space-y-2">
+                                        <div><strong class="text-gray-400">Input:</strong><pre class="p-2 bg-black rounded mt-1">{{ result.input }}</pre></div>
+                                        <div><strong class="text-gray-400">Expected:</strong><pre class="p-2 bg-black rounded mt-1">{{ result.expected }}</pre></div>
+                                        <div><strong class="text-gray-400">Your Output:</strong><pre class="p-2 bg-black rounded mt-1">{{ result.output }}</pre></div>
+                                    </div>
+                                </details>
+                            {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
