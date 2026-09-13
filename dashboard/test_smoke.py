@@ -17,6 +17,7 @@ from django.db.models import Count, Q
 
 from dashboard.models import Question, Topic, UserSolvedQuestion
 from compile.models import CodeSubmission
+from problem_detail.views import run_testcases
 from problem_detail.models import TestCase as ProblemTestCase
 
 
@@ -52,6 +53,17 @@ def cpp_toolchain_available():
 SORT_SOLUTION_PY = (
     "a = input().strip().split(',')\n"
     "print(','.join(map(str, sorted(map(int, a)))))\n"
+)
+
+# Correct solution for "Reverse a string". Its expected output contains a
+# capital H, so this only passes if the judge preserves case (bug 5).
+REVERSE_SOLUTION_PY = (
+    "import sys\n"
+    "s = sys.stdin.readline().rstrip('\\n').strip()\n"
+    "parts = [p for p in s.split(',')] if s else []\n"
+    "chars = [p.strip().strip('\"') for p in parts]\n"
+    "chars.reverse()\n"
+    "print(','.join('\"%s\"' % c for c in chars))\n"
 )
 
 SORT_SOLUTION_CPP = """#include <bits/stdc++.h>
@@ -265,7 +277,6 @@ class JudgeTests(TestCase):
         self.tc_id = self.question.name.first().id
 
     def submit(self, language, code):
-        from problem_detail.views import run_testcases
         return run_testcases(
             CodeSubmission(language=language, code=code), self.question, visible_only=False
         )
@@ -277,6 +288,15 @@ class JudgeTests(TestCase):
         if not cpp_toolchain_available():
             self.skipTest("no working g++ locally - C++ is verified on Render")
         self.assertEqual(self.submit("cpp", SORT_SOLUTION_CPP)["score"], 100)
+
+    def test_judge_preserves_output_case(self):
+        """Bug 5: lowercasing submission output made this problem unsolvable."""
+        q = Question.objects.get(title="Reverse a string")
+        result = run_testcases(
+            CodeSubmission(language="py", code=REVERSE_SOLUTION_PY), q, visible_only=False
+        )
+        self.assertEqual(result["score"], 100,
+                         "Reverse a string must be solvable - check for .lower() in run_code")
 
     def test_infinite_loop_times_out(self):
         out = self.submit("py", "while True: pass")["results"][0]["output"]
