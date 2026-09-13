@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import  TestCase, Question
 from compile.models import CodeSubmission
 import subprocess
+SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin"}
 from pathlib import Path
 from django.conf import settings
 import uuid
@@ -67,7 +68,7 @@ def run_code(language, code, input_data):
             # Compile
             compile_result = subprocess.run(
                 ['/usr/bin/g++', str(code_file_path), "-o", str(executable_path)],
-                capture_output=True, text=True, timeout=5
+                capture_output=True, text=True, timeout=5, env=SAFE_ENV
             )
             if compile_result.returncode != 0:
                 error_data = compile_result.stderr
@@ -79,7 +80,7 @@ def run_code(language, code, input_data):
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     text=True,
-                    timeout=5
+                   timeout=5, env=SAFE_ENV
                 )
                 
                 output_data = run_result.stdout
@@ -93,7 +94,7 @@ def run_code(language, code, input_data):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                timeout=5
+                timeout=5, env=SAFE_ENV
             )
             
             output_data = run_result.stdout

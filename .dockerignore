@@ -16,7 +16,7 @@ env/
 .env
 # Local database and media files
 db.sqlite3
-/media/
+
 
 # IDE and OS-specific files
 .idea/

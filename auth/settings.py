@@ -20,13 +20,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-zs30)ft1lgxqc5alxvx2lvbx)vicbqsz_zwyk&upzqtf*t($(s"
+#SECRET_KEY = "django-insecure-zs30)ft1lgxqc5alxvx2lvbx)vicbqsz_zwyk&upzqtf*t($(s"
+
+import os
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-local-dev-only")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+
+#ALLOWED_HOSTS = ['*']
+
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -182,5 +191,7 @@ STORAGES = {
 
 }
 
-GOOGLE_API_KEY = os.environ.get("AIzaSyAVyq_KhYSWEW6yj01BX443N7epGQrcy5E")
+#GOOGLE_API_KEY = os.environ.get("AIzaSyAVyq_KhYSWEW6yj01BX443N7epGQrcy5E")
+
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 

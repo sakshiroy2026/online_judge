@@ -28,4 +28,4 @@ USER appuser
 EXPOSE 8000
 
 # Final, correct CMD line
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "auth.wsgi:application"]
+CMD ["sh", "/app/start.sh"]

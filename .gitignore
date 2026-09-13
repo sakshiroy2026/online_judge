@@ -12,7 +12,7 @@ db.sqlite3
 .env
 
 # Generated Code & Data
-codes/
-inputs/
-outputs/
+/codes/
+/inputs/
+/outputs/
 keys
