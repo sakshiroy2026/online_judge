@@ -38,7 +38,13 @@ def register_user(request):
             messages.info(request, 'User with this username already exists')
             return redirect("/auth/register/")
 
-        user = User.objects.create_user(username=username)
+   #     user = User.objects.create_user(username=username)
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            first_name=first_name or "",
+            last_name=last_name or "",
+        )
         user.set_password(password)
         user.save()
 

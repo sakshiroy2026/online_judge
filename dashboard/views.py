@@ -34,7 +34,8 @@ def dashboard(request):
     # We now check if the user is actually logged in before running queries.
     if request.user.is_authenticated:
         # If the user is logged in, fetch their solved and favorited questions.
-        solved_question_ids = set(UserSolvedQuestion.objects.filter(user=request.user).values_list('question_id', flat=True))
+      #  solved_question_ids = set(UserSolvedQuestion.objects.filter(user=request.user).values_list('question_id', flat=True))
+        solved_question_ids = set(UserSolvedQuestion.objects.filter(user=request.user, is_solved=True).values_list('question_id', flat=True))
         favorited_question_ids = set(UserSolvedQuestion.objects.filter(user=request.user, is_favorite=True).values_list('question_id', flat=True))
     else:
         # If the user is a guest, provide empty sets so the template doesn't crash.
@@ -75,12 +76,15 @@ def leaderboard_view(request):
     #    'usersolvedquestion' is the default related name from the ForeignKey in UserSolvedQuestion.
     #    If you set a related_name, use that instead.
     ranked_users = User.objects.annotate(
-        solved_count=Count('usersolvedquestion')
+    #    solved_count=Count('usersolvedquestion')
+        solved_count=Count('usersolvedquestion', filter=Q(usersolvedquestion__is_solved=True))
     ).filter(
         solved_count__gt=0  # Only include users who have solved at least one question
     ).order_by(
         '-solved_count'  # Order by the solved count in descending order
     )
+
+
 
     current_user_solved_count = get_user_solved_count(request.user)
 
@@ -104,7 +108,8 @@ def get_user_solved_count(user):
         return 0
     
     # The core logic: filter by the user and return the count.
-    return UserSolvedQuestion.objects.filter(user=user).count()
+   # return UserSolvedQuestion.objects.filter(user=user).count()
+    return UserSolvedQuestion.objects.filter(user=user, is_solved=True).count()
 
 
 @login_required
@@ -118,14 +123,14 @@ def profile_view(request, username):
 
     # --- 1. Calculate Solved Counts by Difficulty ---
     # We query the UserSolvedQuestion model, filtering by the user and the difficulty of the related question
-    easy_solved_count = UserSolvedQuestion.objects.filter(user=profile_user, question__difficulty='Easy').count()
-    medium_solved_count = UserSolvedQuestion.objects.filter(user=profile_user, question__difficulty='Medium').count()
-    hard_solved_count = UserSolvedQuestion.objects.filter(user=profile_user, question__difficulty='Hard').count()
+    easy_solved_count = UserSolvedQuestion.objects.filter(user=profile_user, is_solved=True, question__difficulty='Easy').count()
+    medium_solved_count = UserSolvedQuestion.objects.filter(user=profile_user,is_solved=True, question__difficulty='Med.' ).count()
+    hard_solved_count = UserSolvedQuestion.objects.filter(user=profile_user, is_solved=True, question__difficulty='Hard').count()
     total_solved = easy_solved_count + medium_solved_count + hard_solved_count
 
     # --- 2. Get Total Question Counts by Difficulty ---
     total_easy_questions = Question.objects.filter(difficulty='Easy').count()
-    total_medium_questions = Question.objects.filter(difficulty='Medium').count()
+    total_medium_questions = Question.objects.filter(difficulty='Med.').count()
     total_hard_questions = Question.objects.filter(difficulty='Hard').count()
     total_questions = total_easy_questions + total_medium_questions + total_hard_questions
     
@@ -141,7 +146,8 @@ def profile_view(request, username):
     # --- 3. Calculate Leaderboard Rank ---
     # Get all users, annotated with their solve count, ordered by score
     ranked_users = User.objects.annotate(
-        solved_count=Count('usersolvedquestion')
+      #  solved_count=Count('usersolvedquestion')
+         solved_count=Count('usersolvedquestion', filter=Q(usersolvedquestion__is_solved=True))
     ).order_by('-solved_count', 'date_joined') # Order by score, then join date as tie-breaker
 
     # Find the rank of the current profile_user

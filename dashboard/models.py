@@ -21,7 +21,9 @@ class Question(models.Model):
 class UserSolvedQuestion(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+ #   is_favorite = models.BooleanField(default=False)
     is_favorite = models.BooleanField(default=False)
+    is_solved = models.BooleanField(default=False)
     solved_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

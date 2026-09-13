@@ -4,7 +4,11 @@ from django.contrib import messages
 from .models import  TestCase, Question
 from compile.models import CodeSubmission
 import subprocess
-SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin"}
+import os
+if os.name == "nt":  # Windows, local development
+    SAFE_ENV = {"PATH": os.environ.get("PATH", "")}
+else:                # Linux container, Render
+    SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin"}
 from pathlib import Path
 from django.conf import settings
 import uuid
@@ -279,9 +283,10 @@ def submit(request, id):
             )
             # This is where you track the user's solved questions
             if test_results.get('score') == 100:
-                UserSolvedQuestion.objects.get_or_create(
-                    user=request.user, 
-                    question=question
+                UserSolvedQuestion.objects.update_or_create(
+                    user=request.user,
+                    question=question,
+                    defaults={"is_solved": True},
                 )
         
         return render(request, "question_detail.html", context)

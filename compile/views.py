@@ -8,7 +8,11 @@ import os
 import uuid
 import subprocess
 
-SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin"}
+if os.name == "nt":  # Windows, local development
+    SAFE_ENV = {"PATH": os.environ.get("PATH", "")}
+else:                # Linux container, Render
+    SAFE_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin"}
+    
 RUN_TIMEOUT = 5
 
 from pathlib import Path
